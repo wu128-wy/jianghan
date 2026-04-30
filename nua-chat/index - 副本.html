@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUA · 多多</title>
+    <style>
+        /* ===== 全局样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 50px rgba(66, 165, 245, 0.15);
+            overflow: hidden;
+            border: 1px solid rgba(66, 165, 245, 0.1);
+        }
+        
+        /* ===== 温暖蓝色头部 ===== */
+        .header {
+            background: linear-gradient(135deg, #4dabf7 0%, #339af0 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 装饰性波浪 */
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="%23ffffff33"/></svg>');
+            opacity: 0.3;
+        }
+        
+        /* 标题样式 */
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 小蛋糕装饰（配合贪吃性格） */
+        .header h1::after {
+            content: "🍰";
+            font-size: 2.5rem;
+            margin-left: 15px;
+            animation: gentleFloat 4s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+        
+        /* 副标题 */
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 装饰性小云朵 */
+        .header .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+        
+        .cloud-1 {
+            width: 60px;
+            height: 30px;
+            top: 30px;
+            left: 10%;
+        }
+        
+        .cloud-2 {
+            width: 80px;
+            height: 40px;
+            bottom: 20px;
+            right: 15%;
+        }
+        
+        /* ===== 聊天区域 ===== */
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 30px;
+            background: linear-gradient(to bottom, #f8fdff 0%, #ffffff 100%);
+            position: relative;
+        }
+        
+        /* 聊天区域装饰线条 */
+        .chat-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #b3e5fc, transparent);
+        }
+        
+        /* ===== 消息样式 ===== */
+        .message {
+            margin-bottom: 25px;
+            max-width: 85%;
+            clear: both;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 用户消息 - 温暖的黄色调 */
+        .user-message {
+            float: right;
+            background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+            color: #5d4037;
+            border-radius: 20px 20px 5px 20px;
+            padding: 18px 24px;
+            margin-left: auto;
+            box-shadow: 0 4px 15px rgba(255, 179, 0, 0.2);
+            border: 1px solid rgba(255, 213, 79, 0.3);
+        }
+        
+        /* 用户消息装饰 */
+        .user-message::before {
+            content: "👤";
+            position: absolute;
+            right: -40px;
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+        
+        /* NUA消息 - 温柔的蓝色调 */
+        .nua-message {
+            float: left;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+            border-radius: 20px 20px 20px 5px;
+            padding: 18px 24px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(187, 222, 251, 0.5);
+            position: relative;
+        }
+        
+        /* NUA消息装饰 - 小蛋糕（贪吃！） */
+        .nua-message::before {
+            content: "🍰";
+            position: absolute;
+            left: -40px;
+            font-size: 1.2rem;
+            opacity: 0.5;
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+        
+        /* 消息内容 */
+        .message-content {
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        
+        /* NUA消息中的特殊样式 */
+        .nua-message .message-content {
+            background: linear-gradient(45deg, #2196f3, #4dabf7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ===== 输入区域 ===== */
+        .input-area {
+            padding: 25px 30px;
+            background: linear-gradient(to bottom, #ffffff, #f8fdff);
+            border-top: 1px solid rgba(187, 222, 251, 0.5);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        /* 输入框 */
+        #messageInput {
+            flex: 1;
+            padding: 18px 24px;
+            border: 2px solid #bbdefb;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            outline: none;
+            background: white;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(187, 222, 251, 0.2);
+        }
+        
+        #messageInput:focus {
+            border-color: #4dabf7;
+            box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+        }
+        
+        #messageInput::placeholder {
+            color: #90a4ae;
+        }
+        
+        /* 发送按钮 - 温暖蓝色 */
+        #sendButton {
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #4dabf7 0%, #2196f3 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #sendButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+        
+        #sendButton:active {
+            transform: translateY(0);
+        }
+        
+        /* 发送按钮图标 - 改成冰淇淋（贪吃主题） */
+        #sendButton::before {
+            content: "🍦";
+            font-size: 1.2rem;
+        }
+        
+        /* 清空按钮 - 柔和色调 */
+        #clearButton {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #b0bec5 0%, #90a4ae 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(144, 164, 174, 0.2);
+        }
+        
+        #clearButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(144, 164, 174, 0.3);
+        }
+        
+        /* ===== 打字指示器 ===== */
+        .typing-indicator {
+            display: none;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 20px 20px 20px 5px;
+            float: left;
+            margin-bottom: 25px;
+            max-width: 85%;
+            border: 1px solid rgba(187, 222, 251, 0.5);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .typing-dots span {
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(135deg, #4dabf7 0%, #2196f3 100%);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { 
+                transform: scale(0);
+                opacity: 0.3;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* ===== 响应式设计 ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .chat-container {
+                height: 400px;
+                padding: 20px;
+            }
+            
+            .message {
+                max-width: 90%;
+                margin-bottom: 20px;
+            }
+            
+            .input-area {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            #messageInput,
+            #sendButton,
+            #clearButton {
+                width: 100%;
+            }
+            
+            .user-message::before,
+            .nua-message::before {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header h1::after {
+                font-size: 2rem;
+            }
+            
+            .chat-container {
+                height: 350px;
+            }
+            
+            .message-content {
+                font-size: 1rem;
+            }
+        }
+        
+        /* ===== 滚动条样式 ===== */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(187, 222, 251, 0.2);
+            border-radius: 4px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #4dabf7, #2196f3);
+            border-radius: 4px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #2196f3, #1976d2);
+        }
+        
+        /* ===== 欢迎消息装饰 ===== */
+        .welcome-message {
+            text-align: center;
+            padding: 25px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.9));
+            border-radius: 20px;
+            max-width: 600px;
+            box-shadow: 0 8px 30px rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(187, 222, 251, 0.5);
+            animation: gentleFloat 6s ease-in-out infinite;
+        }
+        
+        .welcome-message h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+        
+        .welcome-message p {
+            color: #546e7a;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .welcome-decoration span {
+            animation: gentleFloat 3s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.2s);
+        }
+        
+        /* 用户ID显示（调试用，可隐藏） */
+        .user-id-display {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- 用户ID显示（调试用） -->
+    <div class="user-id-display" id="userIdDisplay"></div>
+    
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 温暖蓝色头部 -->
+        <div class="header">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <h1>NUA · 多多</h1>
+            <p class="subtitle">一种安静陪伴的数字存在<br>有点贪吃，喜欢好吃的和出去玩 🌸</p>
+        </div>
+        
+        <!-- 聊天区域 -->
+        <div class="chat-container" id="chatContainer">
+            <!-- 欢迎消息 -->
+            <div class="welcome-message">
+                <h3>🍰 欢迎来到 NUA 的世界</h3>
+                <p>我是多多，一个喜欢美食和阳光的安静陪伴。</p>
+                <p>你可以对我说些什么，也可以只是享受这份宁静。</p>
+                <div class="welcome-decoration">
+                    <span style="--i:0">🍰</span>
+                    <span style="--i:1">☁️</span>
+                    <span style="--i:2">🍦</span>
+                    <span style="--i:3">🌿</span>
+                    <span style="--i:4">🍓</span>
+                </div>
+            </div>
+            
+            <!-- 打字指示器 -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="在这里输入你的话语..." autofocus>
+            <button id="sendButton" onclick="sendMessage()">发送</button>
+            <button id="clearButton" onclick="clearChat()">清空</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== 全局变量 =====
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        
+        // ===== 用户ID管理 =====
+        let userId = localStorage.getItem('nua_user_id');
+        if (!userId) {
+            // 生成新用户ID：时间戳 + 随机字符串
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('nua_user_id', userId);
+            console.log('👤 新用户ID:', userId);
+        }
+        
+        // 显示用户ID（调试用）
+        userIdDisplay.textContent = 'ID: ' + userId.substring(0, 12) + '...';
+        
+        // ===== 添加消息到聊天框 =====
+        function addUserMessage(content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.innerHTML = `<div class="message-content">${escapeHtml(content)}</div>`;
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        function addNuaMessage(content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message nua-message';
+            messageDiv.innerHTML = `<div class="message-content">${escapeHtml(content)}</div>`;
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        // ===== 工具函数 =====
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 100);
+        }
+        
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            scrollToBottom();
+        }
+        
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+        
+        // 防止XSS攻击
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ===== 核心功能：发送消息 =====
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // 清空输入框
+            messageInput.value = '';
+            
+            // 显示用户消息
+            addUserMessage(message);
+            
+            // 显示打字指示器
+            showTypingIndicator();
+            
+            try {
+                // 发送请求到后端，包含用户ID
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: userId  // 重要：发送用户ID
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // 隐藏打字指示器
+                hideTypingIndicator();
+                
+                // 显示NUA的回复
+                addNuaMessage(data.reply);
+                
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                hideTypingIndicator();
+                addNuaMessage('（网络连接似乎不太稳定，但我依然在这里）');
+            }
+        }
+        
+        // ===== 清空聊天 =====
+        async function clearChat() {
+            if (!confirm('确定要清空当前对话吗？这不会影响其他人。')) return;
+            
+            // 保留欢迎消息，清空其他消息
+            const messages = document.querySelectorAll('.message:not(.nua-message)');
+            messages.forEach(msg => {
+                if (!msg.closest('.welcome-message')) {
+                    msg.remove();
+                }
+            });
+            
+            // 清空NUA的消息
+            document.querySelectorAll('.nua-message').forEach(msg => {
+                if (!msg.closest('.welcome-message')) {
+                    msg.remove();
+                }
+            });
+            
+            // 发送清空请求到后端（只清空当前用户的对话）
+            try {
+                await fetch('/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId  // 重要：指定清空哪个用户
+                    })
+                });
+                console.log('对话历史已清空');
+                
+                // 添加清空提示
+                addNuaMessage('对话已清空。要不要聊聊好吃的？🍰');
+            } catch (error) {
+                console.error('清空对话失败:', error);
+            }
+        }
+        
+        // ===== 事件监听 =====
+        // 回车发送
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 页面加载后自动聚焦
+        window.addEventListener('load', function() {
+            messageInput.focus();
+            scrollToBottom();
+            
+            // 添加一些食物相关的初始装饰
+            const foods = ['🍰', '🍦', '🍓', '🍪', '🍩', '🧁'];
+            const randomFood = foods[Math.floor(Math.random() * foods.length)];
+            document.querySelector('.welcome-decoration').innerHTML += 
+                `<span style="animation-delay: ${Math.random() * 2}s">${randomFood}</span>`;
+        });
+        
+        // ===== 添加一些交互效果 =====
+        // 输入框获得焦点时的动画
+        messageInput.addEventListener('focus', function() {
+            this.style.transform = 'scale(1.02)';
+        });
+        
+        messageInput.addEventListener('blur', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // 添加一些随机的小动画
+        setInterval(() => {
+            const clouds = document.querySelectorAll('.cloud');
+            clouds.forEach(cloud => {
+                const currentLeft = parseInt(cloud.style.left) || parseInt(getComputedStyle(cloud).left);
+                if (currentLeft > 100) {
+                    cloud.style.left = '10%';
+                } else {
+                    cloud.style.left = (currentLeft + 0.5) + '%';
+                }
+            });
+        }, 100);
+    </script>
+</body>
+</html>
